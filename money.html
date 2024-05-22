@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geldverwaltung</title>
+<link rel="manifest" href="manifest.json">
+<style>
+.background-dark {
+    background-color: rgb(255, 255, 255);
+}
+.center {
+    display: flex;
+    justify-content: center;
+}
+.margin-top {
+    margin-top: 75px;
+}
+
+.abc {
+    margin-top: 5%;
+}
+.ff{
+    text-indent: 1000px;
+}
+.timer {
+    font-size: 150%; /* Größere Schriftgröße */
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(4, 83, 4)
+}
+</style>
+</head>
+<body class="background-dark">
+<div class="center abc timer">
+    Geldbudget
+</div>
+<div class="center margin-top">
+    <img src="bild/Geld.jpg">
+</div>
+
+<div class="center timer margin-top">
+    <input type="text" id="opRes" readonly value="0.00"/>
+</div>
+
+<div class="margin-top center">
+    <input type="number" id="xm" placeholder="Betrag hinzufügen">
+    <button onclick="updateBalance(1)"><img src="bild/button.png" alt="Add"></button>
+</div>
+
+<div class="abc center">
+    <input type="number" id="ym" placeholder="Betrag abziehen">
+    <button onclick="updateBalance(-1)"><img src="bild/minus.png" alt="Subtract"></button>
+</div>
+
+<div>
+    <h2>Transaktionen:</h2>
+    <ul id="transaktionen"></ul>
+</div>
+
+<script>
+let transaktionen = [];
+
+function updateBalance(operation) {
+    let balanceField = document.getElementById('opRes');
+    let balance = parseFloat(balanceField.value.replace(",", "."));
+
+    let amount = 0;
+
+    if (operation === 1) {
+        amount = parseFloat(document.getElementById('xm').value);
+        transaktionen.push({ typ: "Einzahlung", betrag: amount, zeitpunkt: new Date() });
+    } else if (operation === -1) {
+        amount = parseFloat(document.getElementById('ym').value);
+        transaktionen.push({ typ: "Abhebung", betrag: amount, zeitpunkt: new Date() });
+        amount = -amount; // Umkehren des Betrags für Abhebung
+    }
+
+    if (!isNaN(amount)) {
+        balance += amount;
+        balanceField.value = balance.toFixed(2).replace(".", ",");
+
+        updateTransaktionen();
+    }
+}
+
+function updateTransaktionen() {
+    let transaktionenListe = document.getElementById("transaktionen");
+
+    transaktionenListe.innerHTML = "";
+
+    transaktionen.forEach(transaktion => {
+        let listItem = document.createElement("li");
+        let zeitpunkt = `${transaktion.zeitpunkt.getHours()}:${transaktion.zeitpunkt.getMinutes()} - ${transaktion.zeitpunkt.getDate()}.${transaktion.zeitpunkt.getMonth()+1}.${transaktion.zeitpunkt.getFullYear()}`;
+        listItem.textContent = `${transaktion.typ}: ${transaktion.betrag.toFixed(2).replace(".", ",")} CHF (${zeitpunkt})`;
+        transaktionenListe.appendChild(listItem);
+    });
+}
+</script>
+
+</body>
+</html>
